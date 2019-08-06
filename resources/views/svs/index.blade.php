@@ -1,99 +1,92 @@
-<!doctype html>
-<html>
-    <head>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    </head>
-    <style>
-    	.border-black {
-    		border-color: black;
-    	}
-    	body {
-    		padding: 50px;
-    		text-align: center;
-    	}
-    </style>
-    <header>
-        <u><h1 class="text-center">
-        	Schlüsselverwaltungssystem<br>
-        </h1></u>
-        <br>
-    </header>
-    <body>
-    	<main>
-	       	<b><u><p>Schlüssel aufhängen:</p></u></b>
-			<form method="POST" action="/storeKeyIntoShelf">
-				{{ csrf_field() }}
-				<div>
-					<input class="btn border-black text-left" type="text" placeholder="Regalplatznummer" name="rpnr">
-					<input class="btn border-black text-left" type="text" placeholder="Schlüsselname" name="keyname">
-					<button class="btn border-black text-left" type="submit" name="aufhaengen">Schlüssel aufhängen</button>
-				</div>
-				<br>
-			</form>
+@extends('layouts.app')
+@section('content')
+    <div class="text-center">
+		<h1 class="text-center">
+			Willkommen im Schlüsselverwaltungssystem<br>
+			<u>Neue Aufgaben:</u><br>
+			
+			<h4><li>Mehrere Rollen, jede Rolle darf nur bestimmte Schlüssel benutzen</li>
+			<li>Schlüssel Histore: Wer hat welchen Schlüssel wann benutzt?</li></h4>
+    	</h1>
 
-			<b><u><p>Schlüssel abhängen:</p></u></b>
+	    <br>
+	    
+    	<b><u><p>Schlüssel aufhängen:</p></u></b>
 
-			<form method="POST" action="/takeKeyOutOfShelf">
-				{{ csrf_field() }}
-				<div>
-					<input class="btn border-black text-left" type="text" placeholder="Schlüsselname" name="keyname">
-					<button class="btn border-black text-left" type="submit" name="abhaengen">Schlüssel abhängen</button>
-				</div>
-				<br>
-			</form>
+		<form method="POST" action="/storeKeyIntoShelf">
+			{{ csrf_field() }}
+			<div>
+				<input class="btn border-dark text-left" type="text" placeholder="Regalplatznummer" name="rpnr" required="true">
+				<input class="btn border-dark text-left" type="text" placeholder="Schlüsselname" name="keyname" required="true">
+				<button class="btn btn-primary border-dark text-left" type="submit" name="aufhaengen">Schlüssel aufhängen</button>
+			</div>
+			<br>
+		</form>
 
-			<b><u><p><br>Regalplatz eintragen:</p></u></b>
+		<b><u><p>Schlüssel abhängen:</p></u></b>
 
-			<form method="POST" action="/storeShelf">
-				{{ csrf_field() }}
-				<div>
-					<input class="btn border-black text-left" type="text" name="rpnr" placeholder="Nummer">
-					<button class="btn border-black text-left" type="submit">Regalplatz eintragen</button>
-				</div>
-				<br>
-			</form>
+		<form method="POST" action="/takeKeyOutOfShelf">
+			{{ csrf_field() }}
+			<div>
+				<input class="btn border-dark text-left" type="text" placeholder="Schlüsselname" name="keyname" required="true">
+				<button class="btn btn-primary border-dark text-left" type="submit" name="abhaengen">Schlüssel abhängen
+				</button>
+			</div>
+			<br>
+		</form>
 
-			<div class="shadow-lg p-3 mb-5 bg-white" style="border-radius: 25px;margin: 0px 150px 0px 150px;">
-				<?php
-					echo "<u>Alle Regalplätze:</u> <br><br>";
-					foreach ($shelf as $shelfItem) {
-						$keys = $shelfItem->key;
-						if($keys)
-							echo "<li><u>Der Regalplatz ".$shelfItem->nummer, " beinhaltet den Schlüssel ".$keys->name."</u></li>";
-						if(!$keys) {
-							echo "<li>Der Regalplatz ".$shelfItem->nummer." ist leer</li>";
-						}
-					}
-					echo "<br>";
-				?>
-	        </div>
-
-			<b><u><p><br>Schlüssel eintragen:</p></u></b>
-
-			<form method="POST" action="/storeKey">
-				{{ csrf_field() }}
-				<div>
-					<input class="btn border-black text-left" type="text" name="keyname" placeholder="Name">
-					<input class="btn border-black text-left" type="text" name="keyDescription" placeholder="Beschreibung (optional)">
-					<button class="btn border-black text-left" type="submit">Schlüssel eintragen</button>
-				</div>
-				<br>
-			</form>
-
-			<div class="shadow-lg p-3 mb-5 bg-white" style="border-radius: 25px;margin: 0px 150px 0px 150px;">
-		    	<?php
-					echo "<u>Alle Schlüssel:</u> <br><br>";
-					foreach ($key as $keyItem) {
-						$shelfs = $keyItem->shelf;
-						if($shelfs)
-							echo "<li><u>Der Schlüssel ".$keyItem->name, " liegt im Regalplatz ".$shelfs->nummer."</u></li>";
-						if(!$shelfs) {
-							echo "<li>Der Schlüssel ".$keyItem->name." wurde noch nicht aufgehangen!</li>";
-						}
-					}
-					echo "<br>";
-				?>
-	        </div>
-    	</main>
-    </body>
-</html>
+		
+		<div class="border border-dark shadow p-3 mb-3 bg-white" style="border-radius: 50px;margin: 0px 150px 0px 150px">
+			<u><b>Alle Regalplätze:</b></u>
+			<?php $user = new \App\User(); ?>
+			@foreach($shelf as $shelfItem)
+			<?php $keys = $shelfItem->key; ?>
+				@if($keys)
+					<li>
+						<u>
+							Der Regalplatz {{ $shelfItem->nummer }} beinhaltet den Schlüssel {{ $shelfItem->key->name }}
+						</u>
+						@if(Auth::check() && $user->where('name',Auth::user()->name)->value('role') == 'admin')
+							<form method="POST" class="d-inline">
+								<input type="checkbox" class="m-1" name="selectedRows[]" value="<?php echo $shelfItem->id ?>">
+							</form>
+						@else
+							<form method="POST" class="d-inline">
+								<input type="checkbox" class="disabled m-1" name="selectedRowsRP[]" value="<?php echo $shelfItem->id ?>">
+							</form>
+						@endif
+					</li>
+				@endif
+				@if(!$keys)
+					<li>Der Regalplatz {{ $shelfItem->nummer }} ist leer</li>
+				@endif
+			@endforeach
+	    </div>
+		<div class="border border-dark shadow p-3 mb-3 bg-white" style="border-radius: 50px;margin: 0px 150px 0px 150px">
+	    	<u><b>Alle Schlüssel:</b></u>
+	    	<?php $user = new \App\User(); ?>
+				@foreach ($key as $keyItem)
+					<?php $shelfs = $keyItem->shelf; ?>
+					@if($shelfs)
+						<li>
+							<u>
+								Der Schlüssel {{ $keyItem->name }} liegt im Regalplatz {{ $keyItem->shelf->nummer }}
+							</u>
+							@if(Auth::check() && $user->where('name',Auth::user()->name)->value('role') == 'admin')
+								<form method="POST" class="d-inline">
+									<input type="checkbox" class="m-1" name="selectedRowsKey[]" value="<?php echo $shelfItem->id ?>">
+								</form>
+							@else
+								<form method="POST" class="d-inline">
+									<input type="checkbox" class="disabled m-1" name="selectedRows[]" value="<?php echo $shelfItem->id ?>">
+								</form>
+							@endif
+						</li>
+					@endif
+					@if(!$shelfs)
+						<li>Der Schlüssel {{ $keyItem->name }} wurde noch nicht aufgehangen!</li>
+					@endif
+				@endforeach
+	    </div>
+    </div>
+@endsection
