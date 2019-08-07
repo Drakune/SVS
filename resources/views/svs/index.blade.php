@@ -1,6 +1,35 @@
 @extends('layouts.app')
 @section('content')
     <div class="text-center">
+
+		@if (Session::has('errorKeyOutShelfNoKey'))
+			<div class="alert alert-danger">{{Session::get('errorKeyOutShelfNoKey')}}</div>
+		@endif
+
+		@if (Session::has('successTakeKeyOutShelf'))
+			<div class="alert alert-success">{{Session::get('successTakeKeyOutShelf')}}</div>
+		@endif
+
+		@if (Session::has('errorStoreKeyInShelfBothNotExist'))
+			<div class="alert alert-danger">{{Session::get('errorStoreKeyInShelfBothNotExist')}}</div>
+		@endif
+
+		@if (Session::has('errorStoreKeyInShelfRPNotExist'))
+			<div class="alert alert-warning">{{Session::get('errorStoreKeyInShelfRPNotExist')}}</div>
+		@endif
+
+		@if (Session::has('errorStoreKeyInShelfKeyNotExist'))
+			<div class="alert alert-warning">{{Session::get('errorStoreKeyInShelfKeyNotExist')}}</div>
+		@endif
+
+		@if (Session::has('errorStoreKeyInShelfKeyAlreadyInShelf'))
+			<div class="alert alert-danger">{{Session::get('errorStoreKeyInShelfKeyAlreadyInShelf')}}</div>
+		@endif
+		
+		@if (Session::has('successStoreKeyInShelf'))
+			<div class="alert alert-success">{{Session::get('successStoreKeyInShelf')}}</div>
+		@endif
+
 		<h1 class="text-center">
 			Willkommen im Schlüsselverwaltungssystem<br>
 			<u>Neue Aufgaben:</u><br>
