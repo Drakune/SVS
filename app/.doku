@@ -1,0 +1,3 @@
+Dieser Ordner mit den Dateien wie Role.php, ShelfKey.php, Shelfspace.php sind dafür da, um anzugeben was man mit diesen Datenbanken machen kann. Zum Beispiel welce Felder man füllen darf, welche Felder in Arrays versteckt werden sollen oder welche Tabelle diese Klasse benutzen soll. Ausserdem kann man Beziehungen angeben.
+
+ShelfKey und Shelfspace haben eine 1 zu 1 Verbindung, da jeder Regalplatz immer nur einen Schlüssel zur selben Zeit haben darf.
