@@ -21,6 +21,14 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
+<style>
+    .hiddenX {
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s 2s, opacity 2s linear;
+    }
+}
+</style>
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
@@ -65,12 +73,15 @@
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <a class="dropdown-item" href="managerp">Regalplätze verwalten</a>
                             <a class="dropdown-item" href="managekey">Schlüssel verwalten</a>
+                            <a class="dropdown-item" href="managekeyperms">Schlüsselrechte verwalten</a>
                             <a class="dropdown-item" href="manageuser">Nutzer verwalten</a>
+                            <a class="dropdown-item" href="keyhistory">Schlüsselhistorie anzeigen</a>
                         </div>
                     </div>
                 @endif
                 @if (Session::has('errorNotLoggedIn'))
-                    <div class="alert alert-warning m-2 text-center">{{Session::get('errorNotLoggedIn')}}</div>
+                    <div class="alert alert-warning m-2 text-center hiddenX">{{Session::get('errorNotLoggedIn')}}
+                    </div>
                 @endif
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>

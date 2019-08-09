@@ -13,13 +13,14 @@ class CreateRoles extends Migration
      */
     public function up()
     {
+        
         Schema::create('roles', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('key_id')->unique()->nullable()->default(null);
+            $table->string('key_id')->unique()->default(null);
             $table->boolean('admin')->default(true);
+            $table->boolean('user')->default(false);
             $table->boolean('putzfrau')->default(false);
             $table->boolean('hausmeister')->default(false);
-            $table->boolean('user')->default(false);
             $table->timestamps();
         });
     }

@@ -12,13 +12,17 @@ use DB;
 
 class MyController extends Controller {
 
+    #Ruft die Hauptseite auf
     public function index() {
+        #Fragt ab, ob der Benutzer angemeldet ist
         if(Auth::check()) {
+            #Speichert alle Daten aus der Tabelle in die Variable $shelf und $key
             $shelf = Shelfspace::all();
             $key = ShelfKey::all();
-            
+            #Gibt die View, also die Website, mit den 2 zuvor angelegten Variablen zurück 
             return view('svs.index',compact('shelf','key'));
         }
+        #Wenn der Benutzer nicht angemeldet ist, wird er weitergeleitet auf die registrierseite
         else {
             return redirect('register');
         }
@@ -35,7 +39,7 @@ class MyController extends Controller {
             return view('svs.dashBoard');
         }
         else {
-            return redirect('register')->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für registrierte Benutzer verfügbar! Melde dich an oder registriere dich!']);
+            return redirect('register')->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }
     }
     /*public function create() {
@@ -64,8 +68,9 @@ class MyController extends Controller {
     }*/
 
     public function storeShelf() {
-        if(!(Auth::check()) && !($user->where('name',Auth::user()->name)->value('role') == 'admin')) {
-            return redirect('home')->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für registrierte Benutzer oder Admins verfügbar! Melde dich an oder registriere dich!']);
+        $user = new User();
+        if(!(Auth::check()) || (!($user->where('name',Auth::user()->name)->value('role') == 'admin'))) {
+            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }
     	$storeShelf = new Shelfspace();
 
@@ -80,8 +85,9 @@ class MyController extends Controller {
     	return Redirect()->back()->with(['successCreateShelf'=>'Regalplatz wurde erfolgreich eingetragen']);
     }
     public function storeKey() {
-        if(!(Auth::check()) && !($user->where('name',Auth::user()->name)->value('role') == 'admin')) {
-            return redirect('register')->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für registrierte Benutzer oder Admins verfügbar! Melde dich an oder registriere dich!']);
+        $user = new User();
+        if(!(Auth::check()) || (!($user->where('name',Auth::user()->name)->value('role') == 'admin'))) {
+            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }
         $storeKey = new ShelfKey();
         if($storeKey->where('name',request('keyname'))->value('name') == request('keyname')) {
@@ -97,10 +103,11 @@ class MyController extends Controller {
 
     public function storeKeyIntoShelf() {
         if(Auth::check()) {
+            $user = new User();
             $shelf = new Shelfspace();
             $key = new ShelfKey();
 
-            if($shelf->where('nummer',request('rpnr'))->value('shelf_key_id') == null) {
+            if($shelf->where('nummer',request('rpnr'))->value('shelf_key_id') == !null) {
                 return Redirect()->back()->with(['errorKeyOutShelfNoKey'=>'Der eingegebene Schlüssel wurde schon aus dem Regalplatz genommen!']);
             }
 
@@ -123,12 +130,13 @@ class MyController extends Controller {
             //return Redirect()->back()->with(['errorStoreKeyInShelfKeyAlreadyInShelf'=>'Der Schlüssel wurde erfolgreich in das Regal gelagert!']);
         }
         else {
-            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für registrierte Benutzer verfügbar! Melde dich an oder registriere dich!']);
+            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }   	
     }
 
     public function takeKeyOutOfShelf() {
         if(Auth::check()) {
+            $user = new User();
             $shelf = new Shelfspace();
             $key = new ShelfKey();
 
@@ -142,18 +150,19 @@ class MyController extends Controller {
 
             $idval = $key->where('name',request('keyname'))->first()->shelfspace_id;
 
-            $key->where('name',request('keyname'))->update(['shelfspace_id' => null]);
+            $key->where('name',request('keyname'))->update(['shelfspace_id' => null,'updated_by'=>Auth::user()->name]);
             $shelf->where('id',$idval)->update(['shelf_key_id' => null]);
             return Redirect()->back()->with(['successTakeKeyOutShelf'=>'Der Schlüssel wurde erfolgreich aus dem Regalplatz genommen!']);
         }
         else {
-            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für registrierte Benutzer verfügbar! Melde dich an oder registriere dich!']);
+            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }
     }
 
     public function deleteKey() {
-        if(!(Auth::check()) && !($user->where('name',Auth::user()->name)->value('role') == 'admin')) {
-            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für registrierte Benutzer verfügbar! Melde dich an oder registriere dich!']);
+        $user = new User();
+        if(!(Auth::check()) || (!($user->where('name',Auth::user()->name)->value('role') == 'admin'))) {
+            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }
         $shelf = new Shelfspace();
         $key = new ShelfKey();
@@ -171,8 +180,9 @@ class MyController extends Controller {
     }
 
     public function deleteShelf() {
-        if(!(Auth::check()) && !($user->where('name',Auth::user()->name)->value('role') == 'admin')) {
-            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für registrierte Benutzer verfügbar! Melde dich an oder registriere dich!']);
+        $user = new User();
+        if(!(Auth::check()) || (!($user->where('name',Auth::user()->name)->value('role') == 'admin'))) {
+            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }
         $shelf = new Shelfspace();
         $key = new ShelfKey();
@@ -190,10 +200,11 @@ class MyController extends Controller {
     }
 
     public function managerp() {
+        $user = new User();
         $shelf = Shelfspace::all();
         $key = ShelfKey::all();
         if(!(Auth::check())) {
-            return redirect('register')->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für registrierte Benutzer verfügbar! Melde dich an oder registriere dich!']);
+            return redirect('register')->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }
         return view('svs.rpVerwaltung',compact('shelf','key'));
     }
@@ -203,25 +214,24 @@ class MyController extends Controller {
         $key = ShelfKey::all();
             
         if(!(Auth::check())) {
-            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für registrierte Benutzer verfügbar! Melde dich an oder registriere dich!']);
+            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }
-        return view('svs.keyVerwaltung',compact('shelf','key'));
+        else return view('svs.keyVerwaltung',compact('shelf','key'));
     }
 
     public function manageuser() {
         $user = User::all();
-        if(Auth::check() && $user->where('name',Auth::user()->name)->value('role') == 'admin') {
-            return view('svs.userVerwaltung');
+        $userCheck = new User();
+        if(!(Auth::check())) {
+            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }
-        else {
-            return redirect('home')->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für registrierte Benutzer oder Admins verfügbar! Melde dich an oder kontaktiere den Administrator!']);
-        }
-
+        else return view('svs.userVerwaltung',compact('user','userCheck'));
     }
 
     public function renameKey() {
-        if(!(Auth::check()) && !($user->where('name',Auth::user()->name)->value('role') == 'admin')) {
-            return redirect('register')->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für registrierte Benutzer oder Admins verfügbar! Melde dich an oder registriere dich!']);
+        $user = new User();
+        if(!(Auth::check()) || (!($user->where('name',Auth::user()->name)->value('role') == 'admin'))) {
+            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }
         else {
             $oldName = request('keyname');
@@ -235,8 +245,9 @@ class MyController extends Controller {
     }
 
     public function renameShelf() {
-        if(!(Auth::check()) && !($user->where('name',Auth::user()->name)->value('role') == 'admin')) {
-            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für registrierte Benutzer oder Admins verfügbar! Melde dich an oder registriere dich!']);
+        $user = new User();
+        if(!(Auth::check()) || (!($user->where('name',Auth::user()->name)->value('role') == 'admin'))) {
+            return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }
         else {
             $oldNumber = request('rpnr');
@@ -247,6 +258,18 @@ class MyController extends Controller {
             $shelf->where('nummer',request('rpnr'))->update(['nummer'=>request('newrpnr')]);
             return Redirect()->back()->with(['successRenameShelf'=>'Regalplatz >'.$oldNumber.'< wurde erfolgreich zu >'.request('newrpnr').'< umbenannt.']);
         }
+    }
+
+    public function keyhistory() {
+        $key = new ShelfKey();
+        $user = new User();
+        return view('svs.keyhistory',compact('key','user'));
+    }
+
+    public function managekeyperms() {
+        $key = new ShelfKey();
+        $user = new User();
+        return view('svs.managekeyperms',compact('key','user'));
     }
 
 }

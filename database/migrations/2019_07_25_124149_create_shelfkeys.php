@@ -18,6 +18,7 @@ class CreateShelfKeys extends Migration
             $table->string('name','16')->unique();
             $table->text('description','255')->nullable();
             $table->smallInteger('shelfspace_id')->unique()->nullable()->default(null);
+            $table->string('updated_by')->nullable()->default(null);
             $table->timestamps();
         });
     }
