@@ -1,0 +1,1 @@
+Dies ist der Ordner in dem die Verwaltung der Benutzer verarbeitet wird. Hier können sich die Nutzer registrieren, einloggen oder wenn sie ihr Passwort vergessen haben, ihr Passwort zurücksetzen lassen.

@@ -1,0 +1,1 @@
+In diesem Ordner findet man die Controller. Die sind dafür zuständing um Seiten zurückzuliefern oder Dinge zu berechnen oder zu speichern. Alles was mit Daten zu tun hat regelt der Controller.
