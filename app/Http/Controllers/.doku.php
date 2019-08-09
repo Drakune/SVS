@@ -9,6 +9,6 @@ Um die Schlüssel in einen Regalplatz zu packen, kopiert man sich die ID des Sch
 Als Beispiel: 
 
 Man möchte den Schlüssel mit dem Namen "key" mit der ID 22 in den Regalplatz 85 mit der ID 12 tun. Zuerst kopiert man sich die ID vom Schlüssel; die wäre dann 22. 
-Anschließend sucht man den Regalplatz 85 in der Tabelle und findet dort auch die ID. In der gleichen Reihe gibt es einen Eintrag namens shelf_key_id und dort wird die ID des Schlüssels, also die 22, hineinkopiert. Das selbe für die ID mit dem Regalplatz. Diese kommt auch in die Tabelle shelfkeys in die Spalte shelfspace_id
+Anschließend sucht man den Regalplatz 85 in der Tabelle und findet dort auch die ID. In der gleichen Reihe gibt es einen Eintrag namens shelf_key_id und dort wird die ID des Schlüssels, also die 22, hineinkopiert. Das selbe für die ID mit dem Regalplatz. Diese kommt auch in die Tabelle shelfkeys in die Spalte shelfspace_id.
 
 Den Namen der Schlüssels und die Nummer des Regalplatzes entnimmt man aus den Textfeldern und sucht nach den 2 Kriterien in der Datenbank nach diesen Einträgen. Hat man die Reihen gefunden, kann man sie mit der update() funktion updaten.
