@@ -32,40 +32,18 @@ class MyController extends Controller {
 
     public function dashboard() {
         $user = new User();
+        #Wenn der User registriert ist und Admin ist
         if(Auth::check() && $user->where('name',Auth::user()->name)->value('role') == 'admin') {
             return view('svs.adminDashboard');
         }
         if(Auth::check()) {
             return view('svs.dashBoard');
         }
+        #Wenn der benutzer nicht registriert ist => Fehlermeldung!
         else {
             return redirect('register')->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }
     }
-    /*public function create() {
-    	if(Shelfspace::all()->isEmpty() && Shelfspace::all()->isEmpty()) {
-    		echo "Tables are empty => Rows will be created!<br>";
-    		for ($i=1; $i <= 15; $i++) { 
-    			DB::table('shelfspaces')->insert(array(
-		            array('id'=>$i,'nummer'=>"SP$i",'created_at'=>now(),'updated_at'=>now())
-				));
-    		}
-    		echo "Shelfspace rows have been created.<br>";
-    		for ($i=1; $i <= 15; $i++) { 
-    			DB::table('keys')->insert(array(
-		            array('id'=>$i,'name'=>"Key$i",'description'=>'Lorem ipsum','created_at'=>now(),'updated_at'=>now())
-				));
-    		}
-    		echo "Key rows have been created.<br>";
-    		echo "<br><br>All rows have been created!";
-    	}
-    	else {
-    		echo "Tables are not empty!";
-    	}
-		
-    	return view('svs.create');
-    	
-    }*/
 
     public function storeShelf() {
         $user = new User();
@@ -90,6 +68,7 @@ class MyController extends Controller {
             return Redirect()->back()->with(['errorNotLoggedIn'=>'Diese Funktion ist nur für Admins verfügbar!']);
         }
         $storeKey = new ShelfKey();
+        #Fehler abfangen: abfragen, ob der Schlüssel schon in der Datenbank existiert.
         if($storeKey->where('name',request('keyname'))->value('name') == request('keyname')) {
             return Redirect()->back()->with(['errorCreateKey'=>'Dieser Schlüsseleintrag existiert schon!']);
         }
@@ -106,19 +85,19 @@ class MyController extends Controller {
             $user = new User();
             $shelf = new Shelfspace();
             $key = new ShelfKey();
-
+            #Fehler abfangen:
             if($shelf->where('nummer',request('rpnr'))->value('shelf_key_id') == !null) {
                 return Redirect()->back()->with(['errorKeyOutShelfNoKey'=>'Der eingegebene Schlüssel wurde schon aus dem Regalplatz genommen!']);
             }
-
+            #Fehler abfangen:
             if(!($shelf->where('nummer',request('rpnr'))->exists()) && !($key->where('name',request('keyname'))->exists())) {
                 return Redirect()->back()->with(['errorStoreKeyInShelfBothNotExist'=>'Der eingegebene Regalplatz und Schlüssel existieren nicht!']);
             }
-
+            #Fehler abfangen:
             if(!($shelf->where('nummer',request('rpnr'))->exists())) {
                 return Redirect()->back()->with(['errorStoreKeyInShelfRPNotExist'=>'Der eingegebene Regalplatz existiert nicht!']);
             }
-
+            #Fehler abfangen:
             if(!($key->where('name',request('keyname'))->exists())) {
                 return Redirect()->back()->with(['errorStoreKeyInShelfKeyNotExist'=>'Der eingegebene Schlüssel existiert nicht!']);
             }
@@ -139,11 +118,11 @@ class MyController extends Controller {
             $user = new User();
             $shelf = new Shelfspace();
             $key = new ShelfKey();
-
+            #Fehler abfangen:
             if(!($key->where('name',request('keyname'))->exists())) {
                 return Redirect()->back()->with(['errorKeyOutShelfNoKey'=>'Der eingegebene Schlüssel existiert nicht!']);
             }
-
+            #Fehler abfangen:
             if($key->where('name',request('keyname'))->value('shelfspace_id') == null) {
                 return Redirect()->back()->with(['errorKeyOutShelfNoKey'=>'Der eingegebene Schlüssel wurde schon aus dem Regalplatz genommen!']);
             }
@@ -166,7 +145,7 @@ class MyController extends Controller {
         }
         $shelf = new Shelfspace();
         $key = new ShelfKey();
-
+        #Fehler abfangen:
         if(!($key->where('name',request('keyname'))->value('name') == request('keyname'))) {
             return Redirect()->back()->with(['errorDeleteKey'=>'Schlüssel konnte nicht gelöscht wurden, da er nicht existiert.']);
         }
@@ -174,6 +153,7 @@ class MyController extends Controller {
             $key->where('name',request('keyname'))->delete();
             return Redirect()->back()->with(['successDeleteKey'=>'Schlüssel wurde erfolgreich gelöscht.']);
         }
+        #Fehler abfangen:
         else if($key->where('name',request('keyname'))->value('shelfspace_id') == !(null)) {
             return Redirect()->back()->with(['errorDeleteKeyInShelf'=>'Schlüssel konnte nicht gelöscht werden, da er in einem Regalplatz liegt.']);
         }
@@ -186,7 +166,7 @@ class MyController extends Controller {
         }
         $shelf = new Shelfspace();
         $key = new ShelfKey();
-
+        #Fehler abfangen:
         if(!($shelf->where('nummer',request('rpnr'))->value('nummer') == request('rpnr'))) {
             return Redirect()->back()->with(['errorDeleteShelf'=>'Regalplatz konnte nicht gelöscht wurden, da er nicht existiert.']);
         }
@@ -194,6 +174,7 @@ class MyController extends Controller {
             $shelf->where('nummer',request('rpnr'))->delete();
             return Redirect()->back()->with(['successDeleteShelf'=>'Regalplatz wurde erfolgreich gelöscht.']);
         }
+        #Fehler abfangen:
         else if($shelf->where('nummer',request('rpnr'))->value('shelf_key_id') == !(null)) {
             return Redirect()->back()->with(['errorDeleteShelfWithKey'=>'Regalplatz konnte nicht gelöscht werden, da er einen Schlüssel beinhaltet.']);
         }
@@ -236,6 +217,7 @@ class MyController extends Controller {
         else {
             $oldName = request('keyname');
             $key = new ShelfKey();
+            #Fehler abfangen:
             if($key->where('name',request('newKeyname'))->exists()) {
                 return Redirect()->back()->with(['errorRenameKey'=>'Schlüssel konnte nicht umbenannt werden, da der Name schon existiert']);
             }
